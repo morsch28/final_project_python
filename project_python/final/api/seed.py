@@ -37,6 +37,22 @@ def initial_data():
         author=mor_profile
     )
     
+    article4 = Article.objects.create(
+        title="The Future of Artificial Intelligence in Tech",
+        text="Following the technological revolution, we are witnessing unprecedented advances in AI development that are reshaping industries worldwide.",
+        image="https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=400&fit=crop",
+        author=mor_profile
+    )
+    
+    article5 = Article.objects.create(
+        title="Advanced React Application Development Guide",
+        text="Advanced techniques and methodologies for developing efficient and maintainable React applications that scale.",
+        image="https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=800&h=400&fit=crop",
+        author=mor_profile
+    )
+    
+    Comment.objects.create(article=article5, author=mor_profile, text="Great article!.")
+    Comment.objects.create(article=article4, author=mor_profile, text="Great article!.")
     Comment.objects.create(article=article1, author=mor_profile, text="Great article! Just what I needed.")
     Comment.objects.create(article=article1, author=dana_profile, text="Really helpful tips, thanks!")
 
