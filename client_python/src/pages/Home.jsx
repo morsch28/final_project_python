@@ -10,10 +10,8 @@ function Home() {
   const [filterArticles,setFilterArticle] = useState([])
   const [error,setError] = useState(false)
   const [query,setQuery] = useState("")
- 
-
-  useEffect(()=>{
-    const loadLatestArticles = async () =>{
+  
+ const loadLatestArticles = async () =>{
       try {
         const articles = await articlesServices.getAllArticles()
         setAllArticles(articles)
@@ -22,10 +20,14 @@ function Home() {
         console.log(error);   
       }
     }
+
+  useEffect(()=>{
+    
     loadLatestArticles()
   },[])
 
   const onLoad = async() =>{
+    
     try {
       console.log("Button clicked, query:", query);
       if(query.trim()){
@@ -33,7 +35,7 @@ function Home() {
         const search =  await articlesServices.searchArticles(query)
         console.log(search);
         
-        setFilterArticle(search)
+        setFilterArticle(search.data)
       }else{
         setFilterArticle(allArticles)
       }
@@ -45,16 +47,22 @@ function Home() {
  
 
   return (
-  <div className="text-white">
+  <div className="text-white home-background">
+    {/* setQuery(e.target.value) */}
+     
+     
     <PageHeader title={'The Blog'} description="Your destination for the latest news,articles insights across a wide range of topics" />
-    <div className="d-flex">
-      <button className=" fs-4" onClick={onLoad}>All Articles</button>
-      <input className="form-control" value={query} onChange={(e)=> {console.log("typing:", e.target.value); setQuery(e.target.value)}} />
-    </div>
-    <div className="card-3d-container d-flex mt-5 justify-content-center align-items center">
-      {filterArticles.map((article)=> {
-        return <ArticleCard article={article} key={article.id}/>
-      })}   
+        <div className="d-flex justify-content-center gap-2  w-75">
+          <button className=" fs-4" onClick={onLoad}>All Articles</button>
+          <input className="form-control" value={query} onChange={(e)=> {console.log("typing:", e.target.value);  setQuery(e.target.value)}}/>
+        </div>
+      <div className="card-3d-container d-flex flex-column   justify-content-center align-items-center">
+        
+      { 
+        filterArticles.map((article)=> {
+          return <ArticleCard article={article} key={article.id}/>
+        })
+      } 
     </div>
   </div>
   );

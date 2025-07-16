@@ -21,8 +21,8 @@ async function searchArticles(query){
 
 async function getArticleById(id){
     try{
-        const response = await httpService.get(`/articles/${id}/`)
-        return response.data
+        const response = await httpService.get(`/articles/${id}`)
+        return response
     }catch(error){
         console.log(error);
    
