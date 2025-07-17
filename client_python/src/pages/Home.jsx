@@ -54,7 +54,7 @@ function Home() {
     <PageHeader title={'The Blog'} description="Your destination for the latest news,articles insights across a wide range of topics" />
         <div className="d-flex justify-content-center gap-2  w-75">
           <button className=" fs-4" onClick={onLoad}>All Articles</button>
-          <input className="form-control" value={query} onChange={(e)=> {console.log("typing:", e.target.value);  setQuery(e.target.value)}}/>
+          <input className="form-control" value={query} onChange={(e)=> { setQuery(e.target.value)}}/>
         </div>
       <div className="card-3d-container d-flex flex-column   justify-content-center align-items-center">
         
