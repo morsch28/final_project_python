@@ -1,8 +1,14 @@
 import httpService from "./httpServices";
+import userServices from "./userServices"
 
 async function getAllComments(id){
     try {
-        const response = await httpService.get(`/articles/${id}/comments`)
+        const token = userServices.getJwt()
+        const response = await httpService.get(`/articles/${id}/comments`,{
+            headers:{
+                Authorization:`Bearer ${token}`
+            }
+        })
         return response
     } catch (error) {
         console.log(error);
@@ -10,9 +16,14 @@ async function getAllComments(id){
     }
 }
 
-async function createComment(id){
+async function createComment(id,commentData){
     try {
-        const response = await httpService.post(`/articles/${id}/comments`)
+        const token = userServices.getJwt()
+        const response = await httpService.post(`/articles/${id}/comments/`,commentData,{
+            headers:{
+                Authorization: `Bearer ${token}`
+            }
+        })
         return response
     } catch (error) {
         console.log(error);
@@ -22,7 +33,7 @@ async function createComment(id){
 
 async function deleteComment(id){
     try {
-        const response = await httpService.delete(`/articles/${id}/`)
+        const response = await httpService.delete(`/articles/comments/${id}`)
         return response
     } catch (error) {
         console.log(error);
@@ -30,9 +41,9 @@ async function deleteComment(id){
     }
 }
 
-async function updateComment(id){
+async function updateComment(id,commentData){
     try {
-        const response = await httpService.put(`/articles/${id}/`)
+        const response = await httpService.put(`/articles/comments/${id}`,commentData)
         return response
     } catch (error) {
         console.log(error);
@@ -46,3 +57,4 @@ const commentsServices = {
     getAllComments,
     createComment,
 }
+export default commentsServices

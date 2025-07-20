@@ -1,12 +1,15 @@
 import "./App.css";
 import Layout from "./component/Layout";
+import AppRouters from "./routes/AppRoutes";
+
 
 function App() {
-  return (
-    <>
-      <Layout />
-    </>
-  );
-}
+  return (<>
+     <AppRouters />
+      {/* <Layout /> */}
+  </>
+ 
+  )
+  }
 
 export default App;

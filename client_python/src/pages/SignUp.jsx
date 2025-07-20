@@ -1,9 +1,10 @@
 import { useFormik } from "formik";
 import userServices from "../services/userServices";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useAuth } from "../context/authContext";
 import Input from "../component/common/Input";
-import PageHeader from  "../component/common/PageHeader"
+import PageHeader from "../component/common/PageHeader";
+import Joi from "joi";
 
 function SignUp() {
   const navigate = useNavigate();
@@ -11,13 +12,13 @@ function SignUp() {
 
   const { handleSubmit, errors, touched, isValid, getFieldProps } = useFormik({
     initialValues: {
-      userName: "",
+      username: "",
       email: "",
       password: "",
     },
     validate(values) {
       const schema = Joi.object({
-        userName: Joi.string().min(2).max(256).required(),
+        username: Joi.string().min(2).max(256).required(),
         email: Joi.string().min(5).max(256).email({ tlds: false }).required(),
         password: Joi.string()
           .min(8)
@@ -39,9 +40,9 @@ function SignUp() {
     onSubmit: async (values) => {
       try {
         const response = await userServices.createUser(values);
+        console.log("response", response);
         if (response.status == 201) {
-          await login({ email: values.email, password: values.password });
-          navigate("/home");
+          navigate("/");
         }
       } catch (error) {
         console.log(error);
@@ -50,38 +51,43 @@ function SignUp() {
   });
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="d-flex flex-column justify-content-center align-items-center h-75 mt-5 w-25 bg-info-subtle gap-4 border"
-    >
-      <PageHeader title="Sign Up"/>
-      <div className="d-flex flex-column w-100 gap-3">
-        <Input
-          placeholder="User Name"
-          {...getFieldProps("userName")}
-          error={touched.last && errors.last}
-        />
-        <Input
-          placeholder="Email"
-          {...getFieldProps("email")}
-          error={touched.email && errors.email}
-        />
-        <Input
-          placeholder="Password"
-          {...getFieldProps("password")}
-          error={touched.password && errors.password}
-        />
-      </div>
-      <button
-        type="submit"
-        className="btn btn-primary w-25 p-2 fs-5 mb-2"
-        disabled={!isValid}
+    <div className="d-flex justify-content-center">
+      <form
+        onSubmit={handleSubmit}
+        className="d-flex flex-column justify-content-center align-items-center h-75 mt-5 w-25 gap-4 border signUp"
       >
-        Let's Start
-      </button>
-    </form>
+        <Link to="/sign-in" className="backSignIn">
+          <i class="bi bi-arrow-left"></i>
+          Back to sign in
+        </Link>
+        <PageHeader title="Sign Up" description="create your account" />
+        <div className="d-flex flex-column w-100 gap-3">
+          <Input
+            placeholder="User Name"
+            {...getFieldProps("username")}
+            error={touched.last && errors.last}
+          />
+          <Input
+            placeholder="Email"
+            {...getFieldProps("email")}
+            error={touched.email && errors.email}
+          />
+          <Input
+            placeholder="Password"
+            {...getFieldProps("password")}
+            error={touched.password && errors.password}
+          />
+        </div>
+        <button
+          type="submit"
+          className="btn btn-primary w-25 p-2 fs-5 mb-4"
+          disabled={!isValid}
+        >
+          Let's Start
+        </button>
+      </form>
+    </div>
   );
 }
 
 export default SignUp;
-

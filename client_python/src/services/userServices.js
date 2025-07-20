@@ -5,13 +5,13 @@ import { jwtDecode } from "jwt-decode";
 const TOKEN_KEY = "token"
 
 function createUser(user){
-    return httpService.post("/register",user)
+    return httpService.post("auth/register/",user)
 }
 
 async function login(credential){
     try {
-        const response = await httpService.post("/token/",credential)
-        setToken(response.data)
+        const response = await httpService.post("auth/login/",credential)
+        setToken(response.data.jwt)
         return response
     } catch (error) {
         console.log(error);     
@@ -22,8 +22,9 @@ function setToken(token){
     localStorage.setItem(TOKEN_KEY,token)
     refreshToken()
 }
+
 function refreshToken(){
-    httpService.setDefaultHeader("x-auth-token/",getJwt())
+    httpService.setDefaultHeader("Authorization", `Bearer ${getJwt()}`);
 }
 
 function getJwt(){
@@ -44,12 +45,16 @@ async function getUserFromToken(){
     }   
 }
 
+
 const userServices = {
     getUserFromToken,
     login,
     createUser,
     logout,
-    refreshToken
+    refreshToken,
+    setToken,
+    getJwt
+
 }
 
 export default userServices

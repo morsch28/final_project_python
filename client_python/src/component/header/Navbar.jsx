@@ -1,4 +1,5 @@
 import NavbarLeftSide from "./NavbarLeftSide";
+import NavbarRightSide from "./NavbarRightSide";
 function Navbar() {
   return (
     <nav
@@ -18,6 +19,7 @@ function Navbar() {
           <span className="navbar-toggler-icon"></span>
         </button>
         <NavbarLeftSide />
+        <NavbarRightSide />
       </div>
     </nav>
   );

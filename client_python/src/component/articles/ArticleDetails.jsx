@@ -1,42 +1,67 @@
-import { useEffect, useState } from "react"
-import articlesServices from "../../services/articlesServices"
-import { useParams } from "react-router-dom"
+import { useEffect, useState } from "react";
+import articlesServices from "../../services/articlesServices";
+import { useNavigate, useParams } from "react-router-dom";
+import Input from "../common/Input";
+import CommentForm from "../comments/CommentForm";
 
+function ArticleDetails() {
+  const [article, setArticle] = useState({});
+  const navigate = useNavigate();
 
-function ArticleCard(){
-    const [article,setArticle] = useState({})
-    const {id} = useParams()
+  const { id } = useParams();
 
-    useEffect(()=>{
-        const loadArticle = async () =>{
-            try {
-                const _article = await articlesServices.getArticleById(id);
-                setArticle(_article.data)
-                return article
-            } catch (error) {
-                
-            }
-            
-        }
-        loadArticle()
-    },[id])
+  useEffect(() => {
+    const loadArticle = async () => {
+      try {
+        const _article = await articlesServices.getArticleById(id);
+        console.log("_artic", _article.data);
 
-    return(
-        <div className="d-flex flex-column align-items-center mt-4">
-            <div class="card mb-3 w-75">
-                <img src={article.image} class="card-img-top"  />
-                <div class="card-body">
-                    <h5 class="card-title">{article.title}</h5>
-                    <p class="card-text">{article.text}</p>
-                    <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
-                </div>
-            </div>
-            <div className="d-flex flex-column gap-3 border border-2 w-25 p-3 mb-4 rounded-2 align-items-center">
-                <h3>Add Comment <i class="bi bi-chat"></i></h3>
-                <input type="text" className="form-control"/>
-                <input type="submit" className="w-50 p-2 btn btn-primary" />
-            </div>
+        setArticle(_article.data);
+        return article;
+      } catch (error) {}
+    };
+    loadArticle();
+  }, [id]);
+
+  return (
+    <div className="d-flex flex-column align-items-center mt-4 gap-3 bgArticleDetails">
+      <button
+        className="btn btn-primary d-flex gap-2 p-2 fs-5"
+        onClick={() => navigate("/")}
+      >
+        <i className="bi bi-arrow-left"></i>Back to Articles
+      </button>
+      <div className="card mb-3 w-75 cardsShadow">
+        <img src={article.image} className="card-img-top" />
+        <div className="d-flex p-3 gap-5">
+          <div className="fs-5 d-flex gap-1">
+            <i className="bi bi-person"></i>
+            {article.author_username}
+          </div>
+          <div className="fs-5 d-flex gap-1">
+            <i className="bi bi-person"></i>
+            {article.created_at
+              ? new Date(article.created_at).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })
+              : ""}
+          </div>
         </div>
-    )
+        <div className="card-body d-flex flex-column gap-2">
+          <h2 className="card-title">{article.title}</h2>
+          <h5 className="card-title">{article.text}</h5>
+          <p className="card-text fs-5">{article.content}</p>
+          <p className="card-text">
+            <small className="text-body-secondary">
+              Last updated 3 mins ago
+            </small>
+          </p>
+        </div>
+      </div>
+      <CommentForm />
+    </div>
+  );
 }
-export default ArticleCard
+export default ArticleDetails;
