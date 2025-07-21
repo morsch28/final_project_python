@@ -29,6 +29,12 @@ class UserProfileViewSet(ModelViewSet):
     serializer_class = UserProfileSerializer
     permission_classes = [UserProfilePermission]
 
+    @action(detail=False, methods=["get"])  # 'קוד שהתווסף
+    def me(self, request):
+        profile = UserProfile.objects.get(user=request.user)
+        serializer = self.get_serializer(profile)
+        return Response(serializer.data)
+
 
 class ArticleViewSet(ModelViewSet):
     queryset = Article.objects.all()
@@ -79,12 +85,7 @@ class CommentViewSet(ModelViewSet):
     serializer_class = CommentSerializer
     permission_classes = [CommentOwnerOrReadOnly, IsAuthenticatedOrReadOnly]
 
-    def get_serializer_context(self):  # קוד שהתווסף
-        context = super().get_serializer_context()
-        context.update({"request": self.request})
-        return context
-
-    def perform_create(self, serializer):
+    def perform_create(self, serializer):  # קוד שהתווסף
         user = self.request.user
         profile, create = UserProfile.objects.get_or_create(user=user)
         serializer.save(author=profile)
@@ -115,6 +116,7 @@ class AuthViewSet(ViewSet):
         serializer.is_valid(raise_exception=True)
 
         user = serializer.save()  # calls the create method
+
         jwt = get_token_for_user(user)
 
         # יוצר פרופיל למשתמש בעת ההרשמה

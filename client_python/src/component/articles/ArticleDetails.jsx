@@ -24,14 +24,8 @@ function ArticleDetails() {
   }, [id]);
 
   return (
-    <div className="d-flex flex-column align-items-center mt-4 gap-3 bgArticleDetails">
-      <button
-        className="btn btn-primary d-flex gap-2 p-2 fs-5"
-        onClick={() => navigate("/")}
-      >
-        <i className="bi bi-arrow-left"></i>Back to Articles
-      </button>
-      <div className="card mb-3 w-75 cardsShadow">
+    <div className="d-flex flex-column align-items-center  gap-3 bgArticleDetails">
+      <div className="card mb-3 w-75 mt-5 cardsShadow">
         <img src={article.image} className="card-img-top" />
         <div className="d-flex p-3 gap-5">
           <div className="fs-5 d-flex gap-1">

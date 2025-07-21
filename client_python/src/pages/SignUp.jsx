@@ -1,14 +1,12 @@
 import { useFormik } from "formik";
 import userServices from "../services/userServices";
 import { Link, useNavigate } from "react-router";
-import { useAuth } from "../context/authContext";
 import Input from "../component/common/Input";
 import PageHeader from "../component/common/PageHeader";
 import Joi from "joi";
 
 function SignUp() {
   const navigate = useNavigate();
-  const { login } = useAuth();
 
   const { handleSubmit, errors, touched, isValid, getFieldProps } = useFormik({
     initialValues: {
@@ -54,7 +52,7 @@ function SignUp() {
     <div className="d-flex justify-content-center">
       <form
         onSubmit={handleSubmit}
-        className="d-flex flex-column justify-content-center align-items-center h-75 mt-5 w-25 gap-4 border signUp"
+        className="d-flex flex-column justify-content-center align-items-center p-5 mt-3  gap-4 border signUp"
       >
         <Link to="/sign-in" className="backSignIn">
           <i class="bi bi-arrow-left"></i>
@@ -80,7 +78,7 @@ function SignUp() {
         </div>
         <button
           type="submit"
-          className="btn btn-primary w-25 p-2 fs-5 mb-4"
+          className="btn btn-primary w-50 p-2 fs-5 mb-4"
           disabled={!isValid}
         >
           Let's Start

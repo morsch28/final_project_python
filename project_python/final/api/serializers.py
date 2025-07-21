@@ -65,7 +65,6 @@ class CommentSerializer(ModelSerializer):
 
     def get_is_owner(self, obj):  # קוד שנוסף
         request = self.context.get("request")
-
         if request and getattr(request, "user"):
             return obj.author.user == request.user
         return False

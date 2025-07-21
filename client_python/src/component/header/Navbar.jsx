@@ -1,6 +1,10 @@
+import { useAuth } from "../../context/authContext";
 import NavbarLeftSide from "./NavbarLeftSide";
 import NavbarRightSide from "./NavbarRightSide";
+
 function Navbar() {
+  const { user } = useAuth();
+  console.log("Navbar user:", user);
   return (
     <nav
       className="navbar navbar-expand-md navbar text-dark bg-body-secondary "
@@ -18,8 +22,14 @@ function Navbar() {
         >
           <span className="navbar-toggler-icon"></span>
         </button>
-        <NavbarLeftSide />
-        <NavbarRightSide />
+        {!user ? (
+          <NavbarRightSide />
+        ) : (
+          <>
+            <NavbarLeftSide />
+            <NavbarRightSide />
+          </>
+        )}
       </div>
     </nav>
   );

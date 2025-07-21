@@ -35,9 +35,12 @@ function logout(){
     localStorage.removeItem(TOKEN_KEY)
 }
 
-async function getUserFromToken(){
+function getUserFromToken(){
     try {
         const token = getJwt()
+        if (!token || typeof token !== "string") {
+            return null;
+        }
         return jwtDecode(token)
     } catch (error) {
         console.log(error);
@@ -45,6 +48,14 @@ async function getUserFromToken(){
     }   
 }
 
+async function getUserById(id) {
+  try {
+    const response = await httpService.get(`/userProfiles/${id}/`);
+    return response
+  } catch (error) {
+    console.log("Error fetching user by ID:", error);
+  }
+}
 
 const userServices = {
     getUserFromToken,
@@ -53,7 +64,8 @@ const userServices = {
     logout,
     refreshToken,
     setToken,
-    getJwt
+    getJwt,
+    getUserById
 
 }
 

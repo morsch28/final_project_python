@@ -52,7 +52,7 @@ function SignIn() {
     <div className="d-flex justify-content-center">
       <form
         onSubmit={handleSubmit}
-        className="d-flex flex-column justify-content-center align-items-center  mt-5   gap-4 border border-2 signIn"
+        className="d-flex flex-column justify-content-center align-items-center  mt-3  gap-4 border border-2 signIn"
       >
         <img src={image} alt="" className="imageBlog mt-4" />
         <PageHeader
