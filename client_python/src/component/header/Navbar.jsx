@@ -3,8 +3,8 @@ import NavbarLeftSide from "./NavbarLeftSide";
 import NavbarRightSide from "./NavbarRightSide";
 
 function Navbar() {
-  const { user } = useAuth();
-  console.log("Navbar user:", user);
+  const { user, hasLoggedInOnce } = useAuth();
+
   return (
     <nav
       className="navbar navbar-expand-md navbar text-dark bg-body-secondary "
@@ -22,13 +22,13 @@ function Navbar() {
         >
           <span className="navbar-toggler-icon"></span>
         </button>
-        {!user ? (
-          <NavbarRightSide />
-        ) : (
+        {user || hasLoggedInOnce ? (
           <>
             <NavbarLeftSide />
             <NavbarRightSide />
           </>
+        ) : (
+          <NavbarRightSide />
         )}
       </div>
     </nav>

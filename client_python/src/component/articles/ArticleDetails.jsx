@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import articlesServices from "../../services/articlesServices";
 import { useNavigate, useParams } from "react-router-dom";
-import Input from "../common/Input";
+
 import CommentForm from "../comments/CommentForm";
+import ShowAllComments from "../comments/ShowAllComments";
+import { useAuth } from "../../context/authContext";
 
 function ArticleDetails() {
   const [article, setArticle] = useState({});
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const { id } = useParams();
 
@@ -14,8 +17,6 @@ function ArticleDetails() {
     const loadArticle = async () => {
       try {
         const _article = await articlesServices.getArticleById(id);
-        console.log("_artic", _article.data);
-
         setArticle(_article.data);
         return article;
       } catch (error) {}
@@ -47,14 +48,21 @@ function ArticleDetails() {
           <h2 className="card-title">{article.title}</h2>
           <h5 className="card-title">{article.text}</h5>
           <p className="card-text fs-5">{article.content}</p>
-          <p className="card-text">
-            <small className="text-body-secondary">
-              Last updated 3 mins ago
-            </small>
+          <p className="card-footer w-100">
+            {user?.isAdmin && (
+              <div className="d-flex gap-3 justify-content-center">
+                <button className="bg-transparent fs-5 border-danger">
+                  <i className="bi bi-trash3 fs-3 text-danger"></i>
+                </button>
+                <button className="bg-transparent fs-5 border-success">
+                  <i className="bi bi-pencil fs-3 text-success"></i>
+                </button>
+              </div>
+            )}
           </p>
         </div>
       </div>
-      <CommentForm />
+      {article.id && <ShowAllComments articleId={article.id} />}
     </div>
   );
 }

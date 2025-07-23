@@ -4,24 +4,10 @@ import { useAuth } from "../../context/authContext";
 import userServices from "../../services/userServices";
 
 function NavbarRightSide() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
   const [userName, setUserName] = useState("");
-
-  useEffect(() => {
-    if (user?.user_id) {
-      const loadUser = async () => {
-        try {
-          const userData = await userServices.getUserById(user.user_id);
-          setUserName(userData.data);
-        } catch (error) {
-          console.log(error);
-        }
-      };
-      loadUser();
-    }
-  }, [user]);
 
   const myFlaticonImage =
     "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
@@ -43,7 +29,13 @@ function NavbarRightSide() {
           {user ? (
             <li className="fs-5 d-flex flex-column fw-bold">
               <p>{`Welcome ${userName}`}</p>
-              <button className="dropdown-item text-danger d-flex gap-2">
+              <button
+                className="dropdown-item text-danger d-flex gap-2"
+                onClick={() => {
+                  logout();
+                  navigate("/");
+                }}
+              >
                 Logout
                 <i className="bi bi-box-arrow-right"></i>
               </button>

@@ -3,8 +3,6 @@ import httpService from "./httpServices";
 async function getAllArticles(){
     try {
         const response = await httpService.get("/articles/")
-        console.log("res",response);
-        
         return response.data
     } catch (error) {
         console.log(error);   
@@ -13,7 +11,7 @@ async function getAllArticles(){
 
 async function searchArticles(query){
     try {
-       const response = await httpService.get(`/articles/?search=${query}/`) 
+       const response = await httpService.get(`/articles/?search=${query}`) 
        return response
     } catch (error) {
         console.log(error);
@@ -24,8 +22,6 @@ async function searchArticles(query){
 async function getArticleById(id){
     try{
         const response = await httpService.get(`/articles/${id}/`)
-        console.log("response");
-        
         return response
     }catch(error){
         console.log(error);

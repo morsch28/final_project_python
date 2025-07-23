@@ -7,7 +7,7 @@ import { useAuth } from "../context/authContext";
 import Layout from "../component/Layout";
 
 function AppRouters() {
-  const { isLoading, user } = useAuth();
+  const { isLoading, user, hasLoggedInOnce } = useAuth();
 
   if (isLoading) {
     return <div>Is Loading....</div>;
@@ -20,7 +20,12 @@ function AppRouters() {
 
   return (
     <Routes>
-      <Route path="/" element={user ? <Home /> : <Navigate to="/sign-in" />} />
+      <Route
+        path="/"
+        element={
+          user || hasLoggedInOnce ? <Home /> : <Navigate to="/sign-in" />
+        }
+      />
       <Route path="/sign-in" element={<SignIn />} />
       <Route path="/sign-up/" element={<SignUp />} />
       <Route path="/article-details/:id" element={<ArticleDetails />} />

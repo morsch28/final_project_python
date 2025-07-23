@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+from datetime import timedelta
 from pathlib import Path
 from decouple import config
 
@@ -23,7 +24,7 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-)wfa$s3#zdco)we^j^g$@r_4%&e)vvdi)fpxi%1g^g0*y)#(sw'
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -83,7 +84,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         # 'NAME': BASE_DIR / 'db.sqlite3',
-        'NAME' : config('DB_NAME',default=BASE_DIR /'db.sqlite3')
+        'NAME': config('DB_NAME', default=BASE_DIR / 'db.sqlite3')
     }
 }
 
@@ -136,16 +137,15 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.AllowAny',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-      'rest_framework.authentication.SessionAuthentication',
-      'rest_framework_simplejwt.authentication.JWTAuthentication',  
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ]
 }
 
-from datetime import timedelta
 
-#הגדרה לכמה זמן תקף jwt
+# הגדרה לכמה זמן תקף jwt
 SIMPLE_JWT = {
-     "ACCESS_TOKEN_LIFETIME": timedelta(days=365)
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=365)
 }
 
 # CORS_ALLOWED_ORIGINS = False
@@ -160,6 +160,5 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5174",
     "http://localhost:5173",
 ]
-from decouple import config
 
 dbn = config("DB_NAME")

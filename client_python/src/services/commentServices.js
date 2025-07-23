@@ -33,7 +33,13 @@ async function createComment(id,commentData){
 
 async function deleteComment(id){
     try {
-        const response = await httpService.delete(`/articles/comments/${id}`)
+         const token = userServices.getJwt()
+         const response = await httpService.delete(`/comments/${id}/`,{
+            headers:{
+                Authorization: `Bearer ${token}`
+            }
+        })
+        
         return response
     } catch (error) {
         console.log(error);
@@ -43,7 +49,12 @@ async function deleteComment(id){
 
 async function updateComment(id,commentData){
     try {
-        const response = await httpService.put(`/articles/comments/${id}`,commentData)
+        const token = userServices.getJwt()
+        const response = await httpService.put(`/comments/${id}/`,commentData,{
+            headers:{
+                Authorization:`Bearer ${token}`
+            }
+        })
         return response
     } catch (error) {
         console.log(error);

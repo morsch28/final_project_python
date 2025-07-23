@@ -7,6 +7,7 @@ authContext.displayName = "Auth";
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasLoggedInOnce, setHasLoggedInOnce] = useState(false);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -27,6 +28,7 @@ export default function AuthProvider({ children }) {
       const response = await userServices.login(credential);
       const userFromToken = userServices.getUserFromToken();
       setUser(userFromToken);
+      setHasLoggedInOnce(true);
       return response;
     } catch (error) {
       console.log(error);
@@ -49,7 +51,14 @@ export default function AuthProvider({ children }) {
 
   return (
     <authContext.Provider
-      value={{ user, login, logout, isLoading, getUserById }}
+      value={{
+        user,
+        login,
+        logout,
+        isLoading,
+        getUserById,
+        hasLoggedInOnce,
+      }}
     >
       {children}
     </authContext.Provider>

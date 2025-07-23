@@ -16,7 +16,6 @@ function Home() {
   const loadLatestArticles = async () => {
     try {
       const articles = await articlesServices.getAllArticles();
-      console.log("log", articles);
 
       setAllArticles(articles);
       setFilterArticle(articles.slice(0, 3));
@@ -25,32 +24,31 @@ function Home() {
     }
   };
 
-  // useEffect(() => {
-  //   userServices.refreshToken();
-  //   loadLatestArticles();
-  // }, []);
-
   useEffect(() => {
     if (user) {
       loadLatestArticles();
     }
   }, [user]);
 
-  const onLoad = async () => {
-    try {
-      console.log("Button clicked, query:", query);
-      if (query.trim()) {
-        const search = await articlesServices.searchArticles(query);
-        console.log(search);
-
-        setFilterArticle(search.data);
-      } else {
-        setFilterArticle(allArticles);
-      }
-    } catch (error) {
-      console.log(error);
-    }
+  const onLoadMoreArticles = () => {
+    setFilterArticle(allArticles);
+    setQuery("");
   };
+
+  useEffect(() => {
+    const search = async () => {
+      try {
+        if (query.trim()) {
+          const search = await articlesServices.searchArticles(query);
+          console.log("data", search.data);
+          setFilterArticle(search.data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    search();
+  }, [query]);
 
   return (
     <div className="text-white home-background">
@@ -61,7 +59,7 @@ function Home() {
         description="Your destination for the latest news,articles insights across a wide range of topics"
       />
       <div className="d-flex justify-content-center gap-2  w-75">
-        <button className=" fs-4" onClick={onLoad}>
+        <button className=" fs-4" onClick={onLoadMoreArticles}>
           All Articles
         </button>
         <input

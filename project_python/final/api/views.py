@@ -41,19 +41,6 @@ class ArticleViewSet(ModelViewSet):
     serializer_class = ArticleSerializer
     permission_classes = [ArticlePermission]
 
-    # קוד שהתווסף לעבור עליו
-    # @action(detail=True, methods=['GET'], url_path='comments')
-    # def get_comments_for_article(self, request, pk=None):
-    #     article = self.get_object()
-
-    #     if article.status != "published":
-    #         return Response({"details": "This article is not published"}, status=403)
-
-    #     comments = Comment.objects.filter(
-    #         article=article, reply_to=None)
-    #     serializer = CommentSerializer(comments, many=True)
-    #     return Response(serializer.data, status=200)
-
     @action(detail=True, methods=["GET", "POST"], url_path="comments", permission_classes=[IsAuthenticatedOrReadOnly])
     def comments(self, request, pk=None):
         article = self.get_object()
@@ -79,6 +66,18 @@ class ArticleViewSet(ModelViewSet):
             print(serializer.errors)
             return Response(serializer.errors, status=400)
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        query = self.request.query_params.get('search', None)
+        print("Received q:", query)
+
+        if (query):
+            queryset = queryset.filter(title__icontains=query)
+            print("Filtered queryset count:", queryset.count())
+        else:
+            print("No filtering applied")
+        return queryset
+
 
 class CommentViewSet(ModelViewSet):
     queryset = Comment.objects.all()
@@ -86,6 +85,11 @@ class CommentViewSet(ModelViewSet):
     permission_classes = [CommentOwnerOrReadOnly, IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer):  # קוד שהתווסף
+        user = self.request.user
+        profile, create = UserProfile.objects.get_or_create(user=user)
+        serializer.save(author=profile)
+
+    def perform_update(self, serializer):
         user = self.request.user
         profile, create = UserProfile.objects.get_or_create(user=user)
         serializer.save(author=profile)
