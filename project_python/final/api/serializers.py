@@ -88,6 +88,7 @@ class ArticleSerializer(ModelSerializer):
     author_username = serializers.CharField(
         source="author.user.username", read_only=True)
     created_at = serializers.DateTimeField(read_only=True)
+    image_file = serializers.ImageField(required=False, allow_null=True)
 
     class Meta:
         model = Article

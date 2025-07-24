@@ -44,6 +44,8 @@ class Article(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     status = models.CharField(choices=STATUS_CHOICES, default='draft')
     image = models.URLField(null=True, blank=True)
+    image_file = models.ImageField(
+        upload_to='article_image/', null=True, blank=True)
 
     def __str__(self):
         return f"{self.title} by {self.author.user.username}"
