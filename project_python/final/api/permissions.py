@@ -25,7 +25,6 @@ class IsStaff(permissions.BasePermission):
 class CommentOwnerOrReadOnly(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
-
         # if the method is GET/OPTIONS/HEAD(read-only) allow access
         if request.method in permissions.SAFE_METHODS:
             return True
@@ -34,6 +33,12 @@ class CommentOwnerOrReadOnly(permissions.BasePermission):
             return obj.author.user == request.user
 
         return False
+
+    def has_permission(self, request, view):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        return request.user and request.user.is_authenticated
 
 
 class ArticlePermission(permissions.BasePermission):

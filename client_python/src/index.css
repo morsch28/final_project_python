@@ -69,4 +69,10 @@
 }
 .bgArticleDetails {
   background-color: rgba(165, 228, 255, 0.258);
+  width: 100%;
+}
+.contentInput {
+  height: 200px;
+  padding: 5px;
+  border-radius: 10px;
 }

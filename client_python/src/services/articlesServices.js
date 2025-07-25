@@ -1,4 +1,7 @@
 import httpService from "./httpServices";
+import userServices from "./userServices"
+ 
+
 
 async function getAllArticles(){
     try {
@@ -29,13 +32,21 @@ async function getArticleById(id){
     }
 }
 
-function createArticles(article){
-    return httpService.post("/articles/",article)
+function createArticle(article){
+    return httpService.post("/articles/",article,{
+        headers:{
+            "Content-Type": "multipart/form-data",
+        }
+    })
 }
 
 async function updateArticle(id,article){
     try {
-        const response = await httpService.put(`/articles/${id}/`,article)
+        const response = await httpService.put(`/articles/${id}/`,article,{
+        headers:{
+            "Content-Type": "multipart/form-data",
+        }
+    })
         return response
     } catch (error) {
         console.log(error);
@@ -46,6 +57,7 @@ async function updateArticle(id,article){
 async function deleteArticle(id){
     try {
         const response = await httpService.delete(`/articles/${id}/`)
+        
         return response
     } catch (error) {
         console.log(error);
@@ -56,7 +68,7 @@ async function deleteArticle(id){
 const articlesServices = {
     deleteArticle,
     updateArticle,
-    createArticles,
+    createArticle,
     getAllArticles,
     getArticleById,
     searchArticles

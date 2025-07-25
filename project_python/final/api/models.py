@@ -33,6 +33,7 @@ STATUS_CHOICES = [
 
 class Article(models.Model):
     author = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    author_name = models.CharField(max_length=20, blank=True, null=True)
     title = models.CharField(max_length=100, unique=True, validators=[
         MinLengthValidator(5),
         RegexValidator(regex='^[a-zA-Z].*$')
@@ -42,7 +43,7 @@ class Article(models.Model):
     tags = models.ManyToManyField(Tag, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    status = models.CharField(choices=STATUS_CHOICES, default='draft')
+    status = models.CharField(choices=STATUS_CHOICES, default='published')
     image = models.URLField(null=True, blank=True)
     image_file = models.ImageField(
         upload_to='article_image/', null=True, blank=True)

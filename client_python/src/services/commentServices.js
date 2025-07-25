@@ -3,16 +3,11 @@ import userServices from "./userServices"
 
 async function getAllComments(id){
     try {
-        const token = userServices.getJwt()
-        const response = await httpService.get(`/articles/${id}/comments`,{
-            headers:{
-                Authorization:`Bearer ${token}`
-            }
-        })
+        const response = await httpService.get(`/articles/${id}/comments`)
         return response
     } catch (error) {
-        console.log(error);
-        
+        console.error("Error in getAllComments:", error); 
+        throw error;
     }
 }
 

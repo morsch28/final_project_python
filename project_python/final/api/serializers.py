@@ -83,7 +83,7 @@ class UserProfileSerializer(ModelSerializer):
 
 
 class ArticleSerializer(ModelSerializer):
-    author = HiddenField(default=CurrentProfileDefault())
+    # author = HiddenField(default=CurrentProfileDefault())
     author_id = SerializerMethodField("get_author_id")
     author_username = serializers.CharField(
         source="author.user.username", read_only=True)
@@ -93,6 +93,7 @@ class ArticleSerializer(ModelSerializer):
     class Meta:
         model = Article
         fields = "__all__"
+        read_only_fields = ["author"]
 
     def get_author_id(self, obj):
         return obj.author.id

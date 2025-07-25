@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import dj_database_url
 import os
 from datetime import timedelta
 from pathlib import Path
@@ -28,9 +29,9 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-ALLOWED_HOSTS = []
+
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition
@@ -80,14 +81,6 @@ WSGI_APPLICATION = 'final.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        # 'NAME': BASE_DIR / 'db.sqlite3',
-        'NAME': config('DB_NAME', default=BASE_DIR / 'db.sqlite3')
-    }
-}
 
 
 # Password validation
@@ -167,3 +160,15 @@ dbn = config("DB_NAME")
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+ENVIRONMENT = config('ENVIRONMENT', 'local')
+
+if ENVIRONMENT == 'production':
+    DATABASES = {
+        'default': dj_database_url.parse(config('GLOBAL_DB'))
+    }
+else:
+    DATABASES = {
+        'default': dj_database_url.parse(config('LOCAL_DB'))
+    }

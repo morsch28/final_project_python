@@ -10,6 +10,9 @@ from rest_framework.response import Response
 # checks the username and password against the database
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from core.auth import get_token_for_user
+from rest_framework import serializers
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework import status
 
 
 class UserViewSet(ModelViewSet):
@@ -40,13 +43,19 @@ class ArticleViewSet(ModelViewSet):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
     permission_classes = [ArticlePermission]
+    parser_classes = (MultiPartParser, FormParser)
 
     @action(detail=True, methods=["GET", "POST"], url_path="comments", permission_classes=[IsAuthenticatedOrReadOnly])
     def comments(self, request, pk=None):
         article = self.get_object()
 
+        print(f"Article ID: {article.id}, status: {article.status}")
+        print(
+            f"User: {request.user}, authenticated: {request.user.is_authenticated}")
+
         if request.method == "GET":
             if article.status != "published":
+                print("Article not published - returning 403")
                 return Response({"details": "This article is not published"}, status=403)
             comments = Comment.objects.filter(article=article, reply_to=None)
             serializer = CommentSerializer(
@@ -77,6 +86,18 @@ class ArticleViewSet(ModelViewSet):
         else:
             print("No filtering applied")
         return queryset
+
+    def perform_create(self, serializer):
+        user = self.request.user
+
+        if not user.is_authenticated:
+            raise serializers.ValidationError(
+                "Authentication required to create article")
+        try:
+            author_profile = UserProfile.objects.get(user=user)
+        except UserProfile.DoesNotExist:
+            raise serializers.ValidationError("User profile not found")
+        serializer.save(author=author_profile, status="published")
 
 
 class CommentViewSet(ModelViewSet):
