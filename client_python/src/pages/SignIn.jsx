@@ -63,7 +63,7 @@ function SignIn() {
           <Input
             placeholder="User Name"
             {...getFieldProps("username")}
-            error={touched.last && errors.username}
+            error={touched.username && errors.username}
           />
           <Input
             placeholder="Password"

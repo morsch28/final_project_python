@@ -75,18 +75,22 @@ class ArticleViewSet(ModelViewSet):
             print(serializer.errors)
             return Response(serializer.errors, status=400)
 
+    # read it
     def get_queryset(self):
         queryset = super().get_queryset()
         query = self.request.query_params.get('search', None)
-        print("Received q:", query)
+        tags = self.request.query_params.get('tags', None)
 
-        if (query):
+        if query:
             queryset = queryset.filter(title__icontains=query)
-            print("Filtered queryset count:", queryset.count())
-        else:
-            print("No filtering applied")
-        return queryset
 
+        if tags:
+            tag_list = [tag.strip() for tag in tags.split(',')]
+            queryset = queryset.filter(tags__name__in=tag_list)
+
+        return queryset.distinct()
+
+    # read it
     def perform_create(self, serializer):
         user = self.request.user
 
@@ -95,9 +99,46 @@ class ArticleViewSet(ModelViewSet):
                 "Authentication required to create article")
         try:
             author_profile = UserProfile.objects.get(user=user)
+            tags_list = [tag.strip()
+                         for tag in self.request.data.getlist("tags") if tag.strip()]
+
+            tags_objs = []
+
+            for tag_name in tags_list:
+                tag_obj, created = Tag.objects.get_or_create(name=tag_name)
+                tags_objs.append(tag_obj)
+
         except UserProfile.DoesNotExist:
             raise serializers.ValidationError("User profile not found")
-        serializer.save(author=author_profile, status="published")
+
+        article = serializer.save(author=author_profile, status="published")
+        article.tags.set(tags_objs)
+
+    # read it
+    def perform_update(self, serializer):
+        user = self.request.user
+
+        if not user.is_authenticated:
+            raise serializers.ValidationError(
+                "Authentication required to update article")
+
+        try:
+            author_profile = UserProfile.objects.get(user=user)
+
+            tags_list = [tag.strip()
+                         for tag in self.request.data.getlist("tags") if tag.strip()]
+
+            tags_objs = []
+
+            for tag_name in tags_list:
+                tag_obj, created = Tag.objects.get_or_create(name=tag_name)
+                tags_objs.append(tag_obj)
+
+        except UserProfile.DoesNotExist:
+            raise serializers.ValidationError("User profile not found")
+
+        article = serializer.save(author=author_profile)
+        article.tags.set(tags_objs)
 
 
 class CommentViewSet(ModelViewSet):
@@ -142,25 +183,28 @@ class AuthViewSet(ViewSet):
 
         user = serializer.save()  # calls the create method
 
-        jwt = get_token_for_user(user)
-
         # יוצר פרופיל למשתמש בעת ההרשמה
         UserProfile.objects.get_or_create(user=user)
 
-        return Response({"message": "Registered successfully", "user": serializer.data, **jwt}, 201)
+        return Response({"message": "Registered successfully", "user": serializer.data}, 201)
 
     @action(methods=["post", "get"], detail=False)
     def login(self, request):
+
         # create the serializer object
         serializer = AuthTokenSerializer(
             data=request.data, context={'request': request}
         )
 
-        # if password != password -> throw
-        serializer.is_valid(raise_exception=True)
+        try:
+            # if password != password -> throw
+            serializer.is_valid(raise_exception=True)
+        except Exception as e:
 
+            raise
         # get the user from serializer
         user = serializer.validated_data['user']
+        UserProfile.objects.get_or_create(user=user)
 
         jwt = get_token_for_user(user)
 

@@ -4,9 +4,12 @@ import { Link, useNavigate } from "react-router";
 import Input from "../component/common/Input";
 import PageHeader from "../component/common/PageHeader";
 import Joi from "joi";
+import feedbackService from "../services/feedbackService";
+import { useAuth } from "../context/authContext";
 
 function SignUp() {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const { handleSubmit, errors, touched, isValid, getFieldProps } = useFormik({
     initialValues: {
@@ -40,10 +43,26 @@ function SignUp() {
         const response = await userServices.createUser(values);
         console.log("response", response);
         if (response.status == 201) {
-          navigate("/");
+          await login({ username: values.username, password: values.password });
+          await feedbackService
+            .showAlert({
+              title: `Welcome ${values.username}`,
+              text: "your account has been created successfully",
+              icon: "success",
+              showConfirmButton: false,
+              timer: 2000,
+            })
+            .then(() => {
+              navigate("/");
+            });
         }
       } catch (error) {
-        console.log(error);
+        await feedbackService.showAlert({
+          title: `Error: ${error.message}`,
+          text: "Registration failed. The email may already be in use.",
+          icon: "error",
+          confirmButtonText: "Try Again",
+        });
       }
     },
   });
@@ -55,7 +74,7 @@ function SignUp() {
         className="d-flex flex-column justify-content-center align-items-center p-5 mt-3  gap-4 border signUp"
       >
         <Link to="/sign-in" className="backSignIn">
-          <i class="bi bi-arrow-left"></i>
+          <i className="bi bi-arrow-left"></i>
           Back to sign in
         </Link>
         <PageHeader title="Sign Up" description="create your account" />
@@ -63,7 +82,7 @@ function SignUp() {
           <Input
             placeholder="User Name"
             {...getFieldProps("username")}
-            error={touched.last && errors.last}
+            error={touched.username && errors.username}
           />
           <Input
             placeholder="Email"

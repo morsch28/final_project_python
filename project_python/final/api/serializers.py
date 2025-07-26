@@ -6,6 +6,7 @@ from rest_framework import serializers
 from rest_framework.fields import HiddenField, SerializerMethodField
 from core.auth import CurrentProfileDefault, CurrentUserDefault
 
+
 # serializer - ממיר את האובייקט לג'ייסון
 
 
@@ -82,6 +83,12 @@ class UserProfileSerializer(ModelSerializer):
         return obj.user.id
 
 
+class TagSerializer(ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = "__all__"
+
+
 class ArticleSerializer(ModelSerializer):
     # author = HiddenField(default=CurrentProfileDefault())
     author_id = SerializerMethodField("get_author_id")
@@ -89,6 +96,9 @@ class ArticleSerializer(ModelSerializer):
         source="author.user.username", read_only=True)
     created_at = serializers.DateTimeField(read_only=True)
     image_file = serializers.ImageField(required=False, allow_null=True)
+    tags = TagSerializer(many=True, read_only=True)
+    tag_ids = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Tag.objects.all(), write_only=True, source="tags")
 
     class Meta:
         model = Article
@@ -97,12 +107,6 @@ class ArticleSerializer(ModelSerializer):
 
     def get_author_id(self, obj):
         return obj.author.id
-
-
-class TagSerializer(ModelSerializer):
-    class Meta:
-        model = Tag
-        fields = "__all__"
 
 
 class ArticleUserLikesSerializer(ModelSerializer):

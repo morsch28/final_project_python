@@ -55,7 +55,18 @@ function ArticleDetails() {
                   : ""}
               </div>
             </div>
-            <div className="card-body d-flex flex-column gap-2">
+            <div className="card-body d-flex flex-column gap-4">
+              <div className="d-flex gap-3 flex-wrap">
+                {article.tags &&
+                  article.tags.length > 0 &&
+                  article.tags.map((tag) => {
+                    return (
+                      <button key={tag.id} className="btn btn-info">
+                        {tag.name}
+                      </button>
+                    );
+                  })}
+              </div>
               <h2 className="card-title">{article.title}</h2>
               <h5 className="card-title">{article.text}</h5>
               <p className="card-text fs-5">{article.content}</p>

@@ -14,7 +14,7 @@ async function login(credential){
         setToken(response.data.jwt)
         return response
     } catch (error) {
-        console.log(error);     
+        console.error(error)
     }
 }
 
@@ -43,7 +43,7 @@ function getUserFromToken(){
         }
         return jwtDecode(token)
     } catch (error) {
-        console.log(error);
+        console.error(error)
         
     }   
 }
@@ -53,7 +53,7 @@ async function getUserById(id) {
     const response = await httpService.get(`/userProfiles/${id}/`);
     return response
   } catch (error) {
-    console.log("Error fetching user by ID:", error);
+    console.error("Error fetching user by ID:", error);
   }
 }
 

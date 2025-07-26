@@ -24,6 +24,7 @@ function ArticleForm({ article }) {
       content: article?.content || "",
       image_file: null,
       status: article?.status || "published",
+      tags: article?.tags.join(",") || "",
     },
     validate(values) {
       const schema = Joi.object({
@@ -33,6 +34,7 @@ function ArticleForm({ article }) {
         content: Joi.string().min(10).required(),
         image_file: Joi.any().allow(null).optional(),
         status: Joi.string().valid("published", "draft").required(),
+        tags: Joi.string().required(),
       });
 
       const { error } = schema.validate(values, { abortEarly: false });
@@ -57,6 +59,10 @@ function ArticleForm({ article }) {
         if (values.image_file) {
           formData.append("image_file", values.image_file);
         }
+
+        const tagsArr = values.tags.split(",").map((tag) => tag.trim());
+        tagsArr.forEach((tag) => formData.append("tags", tag));
+
         const response = article
           ? await articleServices.updateArticle(article.id, formData)
           : await articleServices.createArticle(formData);
@@ -103,6 +109,12 @@ function ArticleForm({ article }) {
           placeholder="content"
           {...getFieldProps("content")}
           error={errors.content && touched.content}
+        />
+        <Input
+          className="Tags"
+          placeholder="tags"
+          {...getFieldProps("tags")}
+          error={errors.tags && touched.tags}
         />
         <input
           className="btn bg-secondary-subtle d-flex fs-5"

@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from .models import Article, Comment, UserProfile
+from .models import Article, Comment, UserProfile, Tag
 
 
 def initial_data():
@@ -16,6 +16,11 @@ def initial_data():
     mor_profile = UserProfile.objects.create(user=mor)
     dana_profile = UserProfile.objects.create(user=dana)
 
+    tag_health = Tag.objects.create(name="health")
+    tag_fashion = Tag.objects.create(name="fashion")
+    tag_tech = Tag.objects.create(name="tech")
+    tag_food = Tag.objects.create(name="food")
+
     article1 = Article.objects.create(
         title="5 tips for healthier life",
         text="Getting enough sleep, regular exercise, and eating right are the key to a healthy lifestyle. Drink plenty of water, reduce sugar, and stay active for at least 30 minutes a day.",
@@ -30,6 +35,8 @@ def initial_data():
         status="published"
     )
 
+    article1.tags.add(tag_health)
+
     article2 = Article.objects.create(
         title="Summer 2025 Fashion Trends",
         text="Bold colors, oversized button-down shirts, and flat shoes are taking over this summer. The balance between comfort and style is the main trend.",
@@ -42,6 +49,7 @@ def initial_data():
         author=dana_profile,
         status="published"
     )
+    article2.tags.add(tag_fashion)
 
     article3 = Article.objects.create(
         title="What Should You Eat for Breakfast?",
@@ -55,6 +63,8 @@ def initial_data():
         author=mor_profile,
         status="published"
     )
+
+    article3.tags.add(tag_food)
 
     article4 = Article.objects.create(
         title="The Future of Artificial Intelligence in Tech",
@@ -70,6 +80,8 @@ def initial_data():
         status="published"
     )
 
+    article4.tags.add(tag_tech)
+
     article5 = Article.objects.create(
         title="Advanced React Application Development Guide",
         text="Advanced techniques and methodologies for developing efficient and maintainable React applications that scale.",
@@ -82,6 +94,8 @@ def initial_data():
         author=mor_profile,
         status="published"
     )
+
+    article5.tags.add(tag_tech)
 
     Comment.objects.create(
         article=article5, author=mor_profile, text="Great article!.")

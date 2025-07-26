@@ -14,8 +14,10 @@ function AppRouters() {
   const { isLoading, user, hasLoggedInOnce } = useAuth();
 
   useEffect(() => {
-    userServices.refreshToken();
-  }, []);
+    if (user) {
+      userServices.refreshToken();
+    }
+  }, [user]);
 
   if (isLoading) {
     return <div>Is Loading....</div>;
