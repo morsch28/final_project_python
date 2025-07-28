@@ -14,7 +14,6 @@ import { useAuth } from "../context/authContext";
       setIsLoading(true)
       try {
         const _article = await articlesServices.getArticleById(id);
-        console.log("Article received:", _article.data);
         if (!article) {
           setHasError(true);
         }

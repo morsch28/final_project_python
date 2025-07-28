@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../../context/authContext";
 import userServices from "../../services/userServices";
+import feedbackService from "../../services/feedbackService";
 
 function NavbarRightSide() {
   const { user, logout } = useAuth();
@@ -12,6 +13,15 @@ function NavbarRightSide() {
   const myFlaticonImage =
     "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
 
+  const handleLogout = async () => {
+    const result = await feedbackService.showConfirm({
+      text: "Are you sure you want to logout?",
+    });
+    if (result.isConfirmed) {
+      logout();
+      navigate("/");
+    }
+  };
   return (
     <div className="position-relative">
       <img
@@ -31,10 +41,7 @@ function NavbarRightSide() {
               <p>{`Welcome ${userName}`}</p>
               <button
                 className="dropdown-item text-danger d-flex gap-2"
-                onClick={() => {
-                  logout();
-                  navigate("/");
-                }}
+                onClick={handleLogout}
               >
                 Logout
                 <i className="bi bi-box-arrow-right"></i>

@@ -30,7 +30,7 @@ class CommentOwnerOrReadOnly(permissions.BasePermission):
             return True
 
         if hasattr(obj, "author") and hasattr(obj.author, "user"):
-            return obj.author.user == request.user
+            return obj.author.user == request.user or request.user.is_superuser
 
         return False
 

@@ -4,6 +4,7 @@ import Input from "../common/Input";
 import articleServices from "../../services/articlesServices";
 import { useNavigate } from "react-router-dom";
 import PageHeader from "../common/PageHeader";
+import feedbackService from "../../services/feedbackService";
 
 function ArticleForm({ article }) {
   const navigate = useNavigate();
@@ -48,8 +49,6 @@ function ArticleForm({ article }) {
       return errors;
     },
     onSubmit: async (values) => {
-      console.log("text");
-
       try {
         const formData = new FormData();
         formData.append("author", values.author);
@@ -63,14 +62,54 @@ function ArticleForm({ article }) {
         const tagsArr = values.tags.split(",").map((tag) => tag.trim());
         tagsArr.forEach((tag) => formData.append("tags", tag));
 
-        const response = article
-          ? await articleServices.updateArticle(article.id, formData)
-          : await articleServices.createArticle(formData);
-        if (response.status == 201 || response.status == 200) {
-          navigate("/");
+        if (article) {
+          const result = await feedbackService.showConfirm({
+            text: "Are you sure you want to update this article?",
+          });
+          if (result.isConfirmed) {
+            const response = await articleServices.updateArticle(
+              article.id,
+              formData
+            );
+
+            if (response.status == 200) {
+              await feedbackService
+                .showAlert({
+                  title: "Yes!!",
+                  text: "The article updated successfully",
+                  icon: "success",
+                  showConfirmButton: false,
+                  timer: 2000,
+                })
+                .then(() => {
+                  navigate("/");
+                });
+            }
+          }
+        } else {
+          const response = await articleServices.createArticle(formData);
+          if (response.status == 201) {
+            await feedbackService
+              .showAlert({
+                title: "Yes!!",
+                text: "The article created successfully",
+                icon: "success",
+                showConfirmButton: false,
+                timer: 2000,
+              })
+              .then(() => {
+                navigate("/");
+              });
+          }
         }
       } catch (error) {
-        console.log(error);
+        await feedbackService.showAlert({
+          title: "Ops..!",
+          text: "failed you have server error",
+          icon: "success",
+          showConfirmButton: false,
+          timer: 2000,
+        });
       }
     },
   });

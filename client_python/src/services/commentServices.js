@@ -13,16 +13,11 @@ async function getAllComments(id){
 
 async function createComment(id,commentData){
     try {
-        const token = userServices.getJwt()
-        const response = await httpService.post(`/articles/${id}/comments/`,commentData,{
-            headers:{
-                Authorization: `Bearer ${token}`
-            }
-        })
+        const response = await httpService.post(`/articles/${id}/comments/`,commentData)
         return response
     } catch (error) {
-        console.log(error);
-        
+        console.error("Error in create Comment:", error); 
+        throw error;
     }
 }
 
@@ -44,12 +39,7 @@ async function deleteComment(id){
 
 async function updateComment(id,commentData){
     try {
-        const token = userServices.getJwt()
-        const response = await httpService.put(`/comments/${id}/`,commentData,{
-            headers:{
-                Authorization:`Bearer ${token}`
-            }
-        })
+        const response = await httpService.put(`/comments/${id}/`,commentData)
         return response
     } catch (error) {
         console.log(error);

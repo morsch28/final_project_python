@@ -6,6 +6,7 @@ import Input from "../component/common/Input";
 import PageHeader from "../component/common/PageHeader";
 import image from "../images/b6ba14187_logo.png";
 import Joi from "joi";
+import feedbackService from "../services/feedbackService";
 
 function SignIn() {
   const navigate = useNavigate();
@@ -40,7 +41,17 @@ function SignIn() {
       try {
         const response = await login(values);
         if (response.status == 200) {
-          navigate("/");
+          await feedbackService
+            .showAlert({
+              title: `Welcome ${values.username}`,
+              text: "You have successfully logged in",
+              icon: "success",
+              showConfirmButton: false,
+              timer: 2000,
+            })
+            .then(() => {
+              navigate("/");
+            });
         }
       } catch (error) {
         console.log(error);

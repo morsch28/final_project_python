@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from core.auth import get_token_for_user
 from rest_framework import serializers
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework import status
 
 
@@ -43,15 +43,11 @@ class ArticleViewSet(ModelViewSet):
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
     permission_classes = [ArticlePermission]
-    parser_classes = (MultiPartParser, FormParser)
+    parser_classes = (MultiPartParser, FormParser, JSONParser)
 
     @action(detail=True, methods=["GET", "POST"], url_path="comments", permission_classes=[IsAuthenticatedOrReadOnly])
     def comments(self, request, pk=None):
         article = self.get_object()
-
-        print(f"Article ID: {article.id}, status: {article.status}")
-        print(
-            f"User: {request.user}, authenticated: {request.user.is_authenticated}")
 
         if request.method == "GET":
             if article.status != "published":
@@ -63,6 +59,13 @@ class ArticleViewSet(ModelViewSet):
             return Response(serializer.data)
 
         elif request.method == "POST":
+
+            print("Received POST request to create comment")
+            print(f"User authenticated: {request.user.is_authenticated}")
+            print(f"Request headers: {request.headers}")
+            print(f"Content-Type header: {request.content_type}")
+            print(f"Request data: {request.data}")
+
             if not request.user.is_authenticated:
                 return Response({"details": "Authentication required"}, status=403)
             profile, _ = UserProfile.objects.get_or_create(user=request.user)
@@ -72,7 +75,7 @@ class ArticleViewSet(ModelViewSet):
             if serializer.is_valid():
                 serializer.save(author=profile, article=article)
                 return Response(serializer.data, status=201)
-            print(serializer.errors)
+            print("Serializer errors:", serializer.errors)
             return Response(serializer.errors, status=400)
 
     # read it

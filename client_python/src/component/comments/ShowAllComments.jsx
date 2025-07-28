@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import commentsServices from "../../services/commentServices";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../context/authContext";
 import CommentForm from "./CommentForm";
 import CommentsList from "./CommentsList";
+import feedbackService from "../../services/feedbackService";
 
 function ShowAllComments({ articleId }) {
   const [commentOnEdit, setCommentOnEdit] = useState(null);
   const [comments, setComments] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadComments = async () => {
@@ -19,13 +21,33 @@ function ShowAllComments({ articleId }) {
 
   const handleDelete = async (commentId) => {
     try {
-      const response = await commentsServices.deleteComment(commentId);
-      if (response) {
-        setComments(comments.filter((com) => com.id != commentId));
+      const result = await feedbackService.showConfirm({
+        text: "Are you sure you want to delete?",
+      });
+      if (result.isConfirmed) {
+        const response = await commentsServices.deleteComment(commentId);
+        if (response) {
+          await feedbackService
+            .showAlert({
+              title: "Ok",
+              text: "the comment was deleted successfully",
+              icon: "success",
+              showConfirmButton: false,
+              timer: 2000,
+            })
+            .then(() => {
+              setComments(comments.filter((com) => com.id != commentId));
+            });
+        }
       }
-      // להוסיף מחווה שגיאה
     } catch (error) {
-      //להוסיף מחווה
+      await feedbackService.showAlert({
+        title: "Ops..!",
+        text: `you have server error ${error}`,
+        icon: "error",
+        showConfirmButton: false,
+        timer: 2000,
+      });
     }
   };
 
@@ -35,23 +57,30 @@ function ShowAllComments({ articleId }) {
     editable.contentEditable = true;
     editable.focus();
   };
+
   const handleSaveComment = async (comment) => {
     try {
-      const updateText = document.getElementById(
-        `${comment.id}_text`
-      ).innerText;
-      await commentsServices.updateComment(comment.id, { text: updateText });
-      const updateComments = comments.map((com) => {
-        if (com.id == comment.id) {
-          return { ...com, text: updateText };
-        }
-        return com;
+      const result = await feedbackService.showConfirm({
+        text: "Are you sure you want to edit the comment?",
       });
-      setComments(updateComments);
-      setCommentOnEdit(null);
-      const newText = document.getElementById(`${comment.id}_text`);
-      if (newText) {
-        newText.contentEditable = false;
+      if (result.isConfirmed) {
+        const updateText = document.getElementById(
+          `${comment.id}_text`
+        ).innerText;
+        await commentsServices.updateComment(comment.id, { text: updateText });
+        const updateComments = comments.map((com) => {
+          if (com.id == comment.id) {
+            return { ...com, text: updateText };
+          }
+          return com;
+        });
+        setComments(updateComments);
+        setCommentOnEdit(null);
+        const newText = document.getElementById(`${comment.id}_text`);
+        if (newText) {
+          newText.contentEditable = false;
+        }
+        navigate("/");
       }
     } catch (error) {
       console.log("update comment failed", error);
@@ -63,9 +92,27 @@ function ShowAllComments({ articleId }) {
       const response = await commentsServices.createComment(articleId, {
         text: newComment,
       });
-      setComments([...comments, response.data]);
+      if (response) {
+        await feedbackService
+          .showAlert({
+            title: "Ok!",
+            text: "the comment wad added successfully",
+            icon: "success",
+            showConfirmButton: false,
+            timer: 2000,
+          })
+          .then(() => {
+            setComments([...comments, response.data]);
+          });
+      }
     } catch (error) {
-      console.log("add comment failed", error);
+      await feedbackService.showAlert({
+        title: "Ops..!",
+        text: "failed to add comment",
+        icon: "error",
+        showConfirmButton: false,
+        timer: 2000,
+      });
     }
   };
   return (

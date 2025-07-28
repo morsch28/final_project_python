@@ -11,9 +11,8 @@ function showAlert({title,text,icon,showConfirmButton,timer}){
     })
 }
 
-function showConfirm({title,text,confirmButtonText="yes",cancelButtonText="no"}){
+function showConfirm({text,confirmButtonText="yes",cancelButtonText="no"}){
     return Swal.fire({
-        title,
         text,
         icon:"warning",
         showCancelButton: true,

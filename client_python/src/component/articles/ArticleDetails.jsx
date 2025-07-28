@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import ShowAllComments from "../comments/ShowAllComments";
 import { useAuth } from "../../context/authContext";
 import useArticle from "../../hooks/useArticle";
+import feedbackService from "../../services/feedbackService";
 
 function ArticleDetails() {
   const navigate = useNavigate();
@@ -11,13 +12,33 @@ function ArticleDetails() {
 
   const handleDelete = async (id) => {
     try {
-      const response = await articlesServices.deleteArticle(id);
-      if (response) {
-        navigate("/");
+      const result = await feedbackService.showConfirm({
+        text: "Are you sure you want delete the article?",
+      });
+      if (result.isConfirmed) {
+        const response = await articlesServices.deleteArticle(id);
+        if (response) {
+          await feedbackService
+            .showAlert({
+              title: "Done",
+              text: "The article was deleted successfully",
+              icon: "success",
+              showConfirmButton: false,
+              timer: 2000,
+            })
+            .then(() => {
+              navigate("/");
+            });
+        }
       }
-      return response;
     } catch (error) {
-      console.log(error);
+      await feedbackService.showAlert({
+        title: "Error",
+        text: "failed to delete the article",
+        icon: "error",
+        showConfirmButton: false,
+        timer: 2000,
+      });
     }
   };
 
