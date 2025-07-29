@@ -15,21 +15,15 @@ function Navbar() {
           className="navbar-toggler"
           type="button"
           data-bs-toggle="collapse"
-          data-bs-target="#navbarsExample04"
-          aria-controls="navbarsExample04"
+          data-bs-target="#navbarList"
+          aria-controls="navbarList"
           aria-expanded="false"
           aria-label="Toggle navigation"
         >
           <span className="navbar-toggler-icon"></span>
         </button>
-        {user || hasLoggedInOnce ? (
-          <>
-            <NavbarLeftSide />
-            <NavbarRightSide />
-          </>
-        ) : (
-          <NavbarRightSide />
-        )}
+        {(user || hasLoggedInOnce) && <NavbarLeftSide />}
+        <NavbarRightSide />
       </div>
     </nav>
   );

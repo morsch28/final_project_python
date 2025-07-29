@@ -5,7 +5,7 @@ function NavbarLeftSide() {
   const { user, hasLoggedInOnce } = useAuth();
 
   return (
-    <div className="collapse navbar-collapse" id="navbarsExample04">
+    <div className="collapse navbar-collapse" id="navbarList">
       <ul className="navbar-nav me-auto mb-2 mb-md-0 gap-2">
         {(user || hasLoggedInOnce) && (
           <li className="nav-item">
@@ -14,7 +14,7 @@ function NavbarLeftSide() {
             </Link>
           </li>
         )}
-        {user.isAdmin && (
+        {user?.isAdmin && (
           <li className="nav-item">
             <Link className="nav-link active" to="/create-article">
               Create Article

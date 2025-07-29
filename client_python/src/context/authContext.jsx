@@ -12,7 +12,7 @@ export default function AuthProvider({ children }) {
   useEffect(() => {
     const loadUser = async () => {
       try {
-        const _user = await userServices.getUserFromToken();
+        const _user = userServices.getUserFromToken();
         setUser(_user);
       } catch (error) {
         console.log("Error loading user", error);
@@ -26,12 +26,33 @@ export default function AuthProvider({ children }) {
   const login = async (credential) => {
     try {
       const response = await userServices.login(credential);
-      const userFromToken = userServices.getUserFromToken();
-      setUser(userFromToken);
-      setHasLoggedInOnce(true);
-      return response;
+      if (response.status == 200) {
+        const userFromToken = userServices.getUserFromToken();
+        setUser(userFromToken);
+        setHasLoggedInOnce(true);
+        return { status: true };
+      } else {
+        return { status: false, message: "Failed loggedIn" };
+      }
     } catch (error) {
-      console.log(error);
+      return { status: false, message: error.message };
+    }
+  };
+
+  const createUser = async (user) => {
+    try {
+      setIsLoading(true);
+      const response = await userServices.createUser(user);
+      if (response.status == 201) {
+        await login({ username: user.username, password: user.password });
+        return { status: true };
+      } else {
+        return { status: false, message: "Create user failed" };
+      }
+    } catch (error) {
+      return { status: false, message: error.message };
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -58,6 +79,7 @@ export default function AuthProvider({ children }) {
         isLoading,
         getUserById,
         hasLoggedInOnce,
+        createUser,
       }}
     >
       {children}

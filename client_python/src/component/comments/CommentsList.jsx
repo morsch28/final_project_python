@@ -44,7 +44,7 @@ function CommentsList({
                   </div>
                 </div>
                 <div className="d-flex justify-content-center align-items-center gap-2">
-                  {(comment.is_owner || user.isAdmin) && (
+                  {(comment.is_owner || user?.isAdmin) && (
                     <>
                       {/* delete button */}
                       <button

@@ -4,7 +4,6 @@ import SignUp from "../pages/SignUp";
 import Home from "../pages/Home";
 import ArticleDetails from "../component/articles/ArticleDetails";
 import { useAuth } from "../context/authContext";
-import Layout from "../component/Layout";
 import ArticleForm from "../component/articles/ArticleForm";
 import { useEffect } from "react";
 import userServices from "../services/userServices";
@@ -15,7 +14,7 @@ function AppRouters() {
 
   useEffect(() => {
     if (user) {
-      userServices.refreshToken();
+      userServices.setAuthHeader();
     }
   }, [user]);
 

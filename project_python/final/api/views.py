@@ -12,7 +12,7 @@ from rest_framework.authtoken.serializers import AuthTokenSerializer
 from core.auth import get_token_for_user
 from rest_framework import serializers
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
-from rest_framework import status
+from rest_framework.exceptions import ValidationError as DRFValidatorError
 
 
 class UserViewSet(ModelViewSet):
@@ -51,7 +51,6 @@ class ArticleViewSet(ModelViewSet):
 
         if request.method == "GET":
             if article.status != "published":
-                print("Article not published - returning 403")
                 return Response({"details": "This article is not published"}, status=403)
             comments = Comment.objects.filter(article=article, reply_to=None)
             serializer = CommentSerializer(
@@ -59,12 +58,6 @@ class ArticleViewSet(ModelViewSet):
             return Response(serializer.data)
 
         elif request.method == "POST":
-
-            print("Received POST request to create comment")
-            print(f"User authenticated: {request.user.is_authenticated}")
-            print(f"Request headers: {request.headers}")
-            print(f"Content-Type header: {request.content_type}")
-            print(f"Request data: {request.data}")
 
             if not request.user.is_authenticated:
                 return Response({"details": "Authentication required"}, status=403)
@@ -75,7 +68,7 @@ class ArticleViewSet(ModelViewSet):
             if serializer.is_valid():
                 serializer.save(author=profile, article=article)
                 return Response(serializer.data, status=201)
-            print("Serializer errors:", serializer.errors)
+
             return Response(serializer.errors, status=400)
 
     # read it
@@ -182,7 +175,13 @@ class AuthViewSet(ViewSet):
         serializer = UserSerializer(data=request.data)
         # validation  by  our rules in UserSerializer and in User
         # example check that password has at least 8 characters
-        serializer.is_valid(raise_exception=True)
+        try:
+            serializer.is_valid(raise_exception=True)
+        except DRFValidatorError as e:
+            errors = e.detail
+            if 'password' in errors:
+                return Response({"password_error": "Password must have uppercase, lowercase, number & special char"}, errors, status=400)
+            return Response({"password_error": "Password must have uppercase, lowercase, number & special char"}, errors, status=400)
 
         user = serializer.save()  # calls the create method
 

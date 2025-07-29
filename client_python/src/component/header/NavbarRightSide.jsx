@@ -1,14 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../../context/authContext";
-import userServices from "../../services/userServices";
 import feedbackService from "../../services/feedbackService";
 
 function NavbarRightSide() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [showMenu, setShowMenu] = useState(false);
-  const [userName, setUserName] = useState("");
 
   const myFlaticonImage =
     "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
@@ -22,6 +20,12 @@ function NavbarRightSide() {
       navigate("/");
     }
   };
+
+  const onGuestAction = (navigateTo) => {
+    setShowMenu(false);
+    navigate(navigateTo);
+  };
+
   return (
     <div className="position-relative">
       <img
@@ -38,7 +42,7 @@ function NavbarRightSide() {
         <ul className="dropdown-menu show position-absolute end-0 mt-2">
           {user ? (
             <li className="fs-5 d-flex flex-column fw-bold">
-              <p>{`Welcome ${userName}`}</p>
+              <p>{`Welcome!`}</p>
               <button
                 className="dropdown-item text-danger d-flex gap-2"
                 onClick={handleLogout}
@@ -53,8 +57,7 @@ function NavbarRightSide() {
                 <button
                   className="dropdown-item text-primary d-flex gap-2"
                   onClick={() => {
-                    setShowMenu(false);
-                    navigate("/sign-up");
+                    onGuestAction("/sign-up");
                   }}
                 >
                   Sign Up
@@ -65,8 +68,7 @@ function NavbarRightSide() {
                 <button
                   className="dropdown-item text-success d-flex gap-2"
                   onClick={() => {
-                    setShowMenu(false);
-                    navigate("/sign-in");
+                    onGuestAction("/sign-in");
                   }}
                 >
                   Sign In

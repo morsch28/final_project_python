@@ -2,25 +2,27 @@ import { useEffect, useState } from "react";
 import articlesServices from "../services/articlesServices";
 import ArticleCard from "../component/articles/ArticleCard";
 import PageHeader from "../component/common/PageHeader";
-import Input from "../component/common/Input";
 import { useAuth } from "../context/authContext";
-import userServices from "../services/userServices";
+import feedbackService from "../services/feedbackService";
 
 function Home() {
   const [allArticles, setAllArticles] = useState([]);
   const [filterArticles, setFilterArticle] = useState([]);
-  const [error, setError] = useState(false);
   const [query, setQuery] = useState("");
   const { user } = useAuth();
 
   const loadLatestArticles = async () => {
     try {
       const articles = await articlesServices.getAllArticles();
-
       setAllArticles(articles);
       setFilterArticle(articles.slice(0, 3));
     } catch (error) {
-      console.log(error);
+      await feedbackService.showAlert({
+        title: "Error!",
+        text: "failed load articles",
+        icon: "error",
+        showConfirmButton: true,
+      });
     }
   };
 

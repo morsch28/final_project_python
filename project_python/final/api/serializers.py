@@ -15,7 +15,7 @@ class UserSerializer(ModelSerializer):
         write_only=True,
         validators=[
             RegexValidator(regex=r'^(?=.*[a-z])(?=.*[A-Z])(?=.*(\d))(?=.*[!@#$%^&*-])',
-                           message="Password must contain.."
+                           message="Password must have uppercase, lowercase, number & special char",
                            )
         ])
 

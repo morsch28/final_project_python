@@ -9,6 +9,75 @@ import feedbackService from "../../services/feedbackService";
 function ArticleForm({ article }) {
   const navigate = useNavigate();
 
+  const buildFormData = (values) => {
+    const formData = new FormData();
+    formData.append("author", values.author);
+    formData.append("title", values.title);
+    formData.append("text", values.text);
+    formData.append("content", values.content);
+    if (values.image_file) {
+      formData.append("image_file", values.image_file);
+    }
+    const tagsArr = values.tags.split(",").map((tag) => tag.trim());
+    tagsArr.forEach((tag) => formData.append("tags", tag));
+    return formData;
+  };
+
+  const handleUpdate = async (id, data) => {
+    const result = await feedbackService.showConfirm({
+      text: "Are you sure you want to update this article?",
+    });
+    if (result.isConfirmed) {
+      const response = await articleServices.updateArticle(id, data);
+      if (response.status == 200) {
+        await feedbackService
+          .showAlert({
+            title: "Yes!!",
+            text: "The article updated successfully",
+            icon: "success",
+            showConfirmButton: false,
+            timer: 2000,
+          })
+          .then(() => {
+            navigate("/");
+          });
+      } else {
+        await feedbackService.showAlert({
+          title: "Ops..!",
+          text: "can't updated article try again",
+          icon: "success",
+          showConfirmButton: false,
+          timer: 2000,
+        });
+      }
+    }
+  };
+
+  const handleCreate = async (data) => {
+    const response = await articleServices.createArticle(data);
+    if (response.status == 201) {
+      await feedbackService
+        .showAlert({
+          title: "Yes!!",
+          text: "The article created successfully",
+          icon: "success",
+          showConfirmButton: false,
+          timer: 2000,
+        })
+        .then(() => {
+          navigate("/");
+        });
+    } else {
+      await feedbackService.showAlert({
+        title: "Ops..!",
+        text: "can't created article try again",
+        icon: "success",
+        showConfirmButton: false,
+        timer: 2000,
+      });
+    }
+  };
+
   const {
     handleSubmit,
     getFieldProps,
@@ -50,62 +119,15 @@ function ArticleForm({ article }) {
     },
     onSubmit: async (values) => {
       try {
-        const formData = new FormData();
-        formData.append("author", values.author);
-        formData.append("title", values.title);
-        formData.append("text", values.text);
-        formData.append("content", values.content);
-        if (values.image_file) {
-          formData.append("image_file", values.image_file);
-        }
-
-        const tagsArr = values.tags.split(",").map((tag) => tag.trim());
-        tagsArr.forEach((tag) => formData.append("tags", tag));
-
-        if (article) {
-          const result = await feedbackService.showConfirm({
-            text: "Are you sure you want to update this article?",
-          });
-          if (result.isConfirmed) {
-            const response = await articleServices.updateArticle(
-              article.id,
-              formData
-            );
-
-            if (response.status == 200) {
-              await feedbackService
-                .showAlert({
-                  title: "Yes!!",
-                  text: "The article updated successfully",
-                  icon: "success",
-                  showConfirmButton: false,
-                  timer: 2000,
-                })
-                .then(() => {
-                  navigate("/");
-                });
-            }
-          }
-        } else {
-          const response = await articleServices.createArticle(formData);
-          if (response.status == 201) {
-            await feedbackService
-              .showAlert({
-                title: "Yes!!",
-                text: "The article created successfully",
-                icon: "success",
-                showConfirmButton: false,
-                timer: 2000,
-              })
-              .then(() => {
-                navigate("/");
-              });
-          }
+        const data = buildFormData(values);
+        if (article) handleUpdate(article.id, data);
+        else {
+          handleCreate(data);
         }
       } catch (error) {
         await feedbackService.showAlert({
           title: "Ops..!",
-          text: "failed you have server error",
+          text: error.message || "failed you have server error",
           icon: "success",
           showConfirmButton: false,
           timer: 2000,

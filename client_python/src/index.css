@@ -34,7 +34,14 @@
 .signIn,
 .signUp {
   box-shadow: 0px 0px 26px 7px black;
-  height: 38rem;
+}
+.signIn {
+  height: 35rem;
+}
+.signUp {
+  height: 37rem;
+  gap: 15px;
+  width: 30rem;
 }
 .imageBlog {
   width: 80px;

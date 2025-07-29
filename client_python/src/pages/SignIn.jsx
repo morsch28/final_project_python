@@ -24,7 +24,13 @@ function SignIn() {
           .min(8)
           .max(50)
           .required()
-          .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*(\d))(?=.*[!@#$%^&*-])/),
+          .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*(\d))(?=.*[!@#$%^&*-])/)
+          .messages({
+            "string.pattern.base":
+              "Use 8+ chars with A-Z, a-z, number & symbol",
+            "string.min": "Password must be at least 8 characters long",
+            "string.max": "Password cannot exceed 50 characters",
+          }),
       });
 
       const { error } = schema.validate(values, { abortEarly: false });
@@ -38,23 +44,26 @@ function SignIn() {
       return errors;
     },
     onSubmit: async (values) => {
-      try {
-        const response = await login(values);
-        if (response.status == 200) {
-          await feedbackService
-            .showAlert({
-              title: `Welcome ${values.username}`,
-              text: "You have successfully logged in",
-              icon: "success",
-              showConfirmButton: false,
-              timer: 2000,
-            })
-            .then(() => {
-              navigate("/");
-            });
-        }
-      } catch (error) {
-        console.log(error);
+      const response = await login(values);
+      if (response.status) {
+        await feedbackService
+          .showAlert({
+            title: `Welcome ${values.username}`,
+            text: "You have successfully logged in",
+            icon: "success",
+            showConfirmButton: false,
+            timer: 2000,
+          })
+          .then(() => {
+            navigate("/");
+          });
+      } else {
+        await feedbackService.showAlert({
+          title: `Error: ${response.message}`,
+          text: "loggedIn failed.",
+          icon: "error",
+          confirmButtonText: "Try Again",
+        });
       }
     },
   });
@@ -63,14 +72,14 @@ function SignIn() {
     <div className="d-flex justify-content-center">
       <form
         onSubmit={handleSubmit}
-        className="d-flex flex-column justify-content-center align-items-center  mt-3  gap-4 border border-2 signIn"
+        className="d-flex flex-column justify-content-center align-items-center  mt-3  gap-3 border border-2 signIn"
       >
-        <img src={image} alt="" className="imageBlog mt-4" />
+        <img src={image} alt="" className="imageBlog " />
         <PageHeader
           title="Welcome to the blog"
           description="Sign in to continue"
         />
-        <div className="d-flex flex-column w-100 gap-2">
+        <div className="d-flex flex-column w-100 gap-1">
           <Input
             placeholder="User Name"
             {...getFieldProps("username")}

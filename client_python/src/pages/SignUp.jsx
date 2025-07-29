@@ -9,7 +9,7 @@ import { useAuth } from "../context/authContext";
 
 function SignUp() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { createUser } = useAuth();
 
   const { handleSubmit, errors, touched, isValid, getFieldProps } = useFormik({
     initialValues: {
@@ -25,7 +25,13 @@ function SignUp() {
           .min(8)
           .max(50)
           .required()
-          .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*(\d))(?=.*[!@#$%^&*-])/),
+          .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*(\d))(?=.*[!@#$%^&*-])/)
+          .messages({
+            "string.pattern.base":
+              "Use 8+ chars with A-Z, a-z, number & symbol",
+            "string.min": "Password must be at least 8 characters long",
+            "string.max": "Password cannot exceed 50 characters",
+          }),
       });
 
       const { error } = schema.validate(values, { abortEarly: false });
@@ -39,26 +45,22 @@ function SignUp() {
       return errors;
     },
     onSubmit: async (values) => {
-      try {
-        const response = await userServices.createUser(values);
-        console.log("response", response);
-        if (response.status == 201) {
-          await login({ username: values.username, password: values.password });
-          await feedbackService
-            .showAlert({
-              title: `Welcome ${values.username}`,
-              text: "your account has been created successfully",
-              icon: "success",
-              showConfirmButton: false,
-              timer: 2000,
-            })
-            .then(() => {
-              navigate("/");
-            });
-        }
-      } catch (error) {
+      const response = await createUser(values);
+      if (response.status) {
+        await feedbackService
+          .showAlert({
+            title: `Welcome ${values.username}`,
+            text: "your account has been created successfully",
+            icon: "success",
+            showConfirmButton: false,
+            timer: 2000,
+          })
+          .then(() => {
+            navigate("/");
+          });
+      } else {
         await feedbackService.showAlert({
-          title: `Error: ${error.message}`,
+          title: `Error: ${response.message}`,
           text: "Registration failed. The email may already be in use.",
           icon: "error",
           confirmButtonText: "Try Again",
@@ -71,7 +73,7 @@ function SignUp() {
     <div className="d-flex justify-content-center">
       <form
         onSubmit={handleSubmit}
-        className="d-flex flex-column justify-content-center align-items-center p-5 mt-3  gap-4 border signUp"
+        className="d-flex flex-column justify-content-center align-items-center p-5 mt-2 border signUp"
       >
         <Link to="/sign-in" className="backSignIn">
           <i className="bi bi-arrow-left"></i>
