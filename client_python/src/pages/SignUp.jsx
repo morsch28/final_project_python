@@ -46,6 +46,7 @@ function SignUp() {
     },
     onSubmit: async (values) => {
       const response = await createUser(values);
+      console.log("Res register", response);
       if (response.status) {
         await feedbackService
           .showAlert({
@@ -73,7 +74,7 @@ function SignUp() {
     <div className="d-flex justify-content-center">
       <form
         onSubmit={handleSubmit}
-        className="d-flex flex-column justify-content-center align-items-center p-5 mt-2 border signUp"
+        className="d-flex flex-column justify-content-center align-items-center p-5 mt-3 border signUp"
       >
         <Link to="/sign-in" className="backSignIn">
           <i className="bi bi-arrow-left"></i>
@@ -99,7 +100,7 @@ function SignUp() {
         </div>
         <button
           type="submit"
-          className="btn btn-primary w-50 p-2 fs-5 mb-4"
+          className="btn btn-primary w-50 p-2 fs-5 mb-5"
           disabled={!isValid}
         >
           Let's Start

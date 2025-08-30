@@ -29,6 +29,7 @@ function NavbarRightSide() {
   return (
     <div className="position-relative">
       <img
+        style={{ marginLeft: "100px" }}
         src={myFlaticonImage}
         className="rounded-circle bg-primary"
         width="70"

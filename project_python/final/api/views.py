@@ -170,7 +170,7 @@ class AuthViewSet(ViewSet):
             'register': 'http://127.0.0.1:8000/api/auth/register'
         })
 
-    @action(methods=["post", "get"], detail=False)
+    @action(methods=["post"], detail=False)
     def register(self, request):
         serializer = UserSerializer(data=request.data)
         # validation  by  our rules in UserSerializer and in User
